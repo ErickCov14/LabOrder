@@ -2,88 +2,81 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LabOrder | Asistente Virtual</title>
+  <title>LabOrder - Estado de Máquinas</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #000000, #0a1a2f);
+      background-color: #205e87;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
       margin: 0;
       padding: 0;
-      color: #e0e0e0;
-    }
-
-    header {
-      background: #0d2b4a;
-      color: #00bfff;
-      padding: 1.5rem;
-      text-align: center;
-      box-shadow: 0 0 20px #00bfff44;
-    }
-
-    main {
-      padding: 2rem;
-      text-align: center;
     }
 
     h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
+      padding: 20px;
+      margin: 0;
+      background-color: #1c4d6c;
     }
 
-    p {
-      font-size: 1.2rem;
-      color: #c0c0c0;
+    #contenedor-maquinas {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
     }
 
-    img.logo {
-      width: 180px;
-      margin: 2rem auto;
-      display: block;
-      filter: drop-shadow(0 0 10px #00bfff88);
+    .maquina {
+      background-color: lightgray;
+      color: black;
+      width: 250px;
+      height: 80px;
+      margin: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
     }
 
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #111a2f;
-      color: #888;
-      font-size: 0.9rem;
-      margin-top: 2rem;
-      border-top: 1px solid #222;
+    .estado {
+      font-size: 14px;
+      margin-top: 4px;
     }
   </style>
 </head>
 <body>
+  <h1>LabOrder - Estado de Máquinas</h1>
 
-  <header>
-    <h1>Asistente de Boletas de Laboratorio</h1>
-  </header>
+  <div id="contenedor-maquinas">
+    <!-- Aquí se insertan las máquinas desde la API -->
+  </div>
 
-  <main>
-    <img src="logo_laborder.png" alt="LabOrder Logo" class="logo">
-    <p>Este asistente virtual te guiará paso a paso para crear una boleta en el sistema <strong>LabOrder</strong>.</p>
-    <p>Haz clic en el ícono de chat abajo a la derecha para comenzar.</p>
-  </main>
-
-  <footer>
-    &copy; 2025 LabOrder · Desarrollado por Erick
-  </footer>
-
-  <!-- Watson Assistant Web Chat -->
   <script>
-    window.watsonAssistantChatOptions = {
-      integrationID: "11ab0cb0-8c8f-4288-81b1-0ac002e97b62",
-      region: "au-syd",
-      serviceInstanceID: "a4315b63-da18-4463-9902-a0c0f82faa30",
-      onLoad: async (instance) => { await instance.render(); }
-    };
-    setTimeout(function(){
-      const t = document.createElement('script');
-      t.src = "https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
-      document.head.appendChild(t);
-    });
-  </script>
+    const urlApi = "http://localhost:5146/api/maquinas"; // <-- cámbialo cuando subas a Render
 
+    fetch(urlApi)
+      .then(response => response.json())
+      .then(maquinas => {
+        const contenedor = document.getElementById("contenedor-maquinas");
+        maquinas.forEach(m => {
+          const div = document.createElement("div");
+          div.className = "maquina";
+          div.innerHTML = `
+            <div>${m.nombre}</div>
+            <div class="estado" style="color:${m.color}">${m.estado}</div>
+          `;
+          contenedor.appendChild(div);
+        });
+      })
+      .catch(error => {
+        console.error("Error al cargar las máquinas:", error);
+        document.getElementById("contenedor-maquinas").innerHTML =
+          "<p>Error al conectar con la API.</p>";
+      });
+  </script>
 </body>
 </html>
